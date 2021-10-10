@@ -9,6 +9,9 @@ function dataEtaOrduaEgiaztatu(dataEtaOrdua):
 	else:
 		return None
 
+function norabideaEgiaztatu(norabidea):
+	return (norabidea[0] == '-' or norabidea[0] == '+') and (int(norabidea[1:end:1])>0 and int(norabidea[1:end:1])<9999)
+
 s = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
 
 s.bind( ('', PORT) )
@@ -31,7 +34,7 @@ while True:
 			if komandoa=="DIR":
 				erantzuna = ""
                 norabidea = buf[3:end:1]
-                if (norabidea[0] == '-' or norabidea[0] == '+') and (int(norabidea[1:end:1])>0 and int(norabidea[1:end:1])<9999):
+                if norabideaEgiaztatu(norabidea):
                     #datu-basetik irudia hartzen du eta bere data eta ordua bultatzen du.
                     #errore 06 bueltatzen du emandako norabidearekin irudirik ez badago.
                     if True:
