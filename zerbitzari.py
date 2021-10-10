@@ -22,7 +22,15 @@ while True:
 				break
 			komandoa = buf[0:2:1]
 			if(komandoa=="DIR"){
-
+                norabidea = buf[3:end:1]
+                if ((norabidea[0] == '-' or norabidea[0] == '+') and (norabidea[1:end:1]>0 and norabidea[1:end:1]<9999)){
+                    #datu-basetik irudia hartzen du eta bere data eta ordua bultatzen du.
+                    #errore 06 bueltatzen du emandako norabidearekin irudirik ez badago.
+                    dataEtaOrdua = " "
+                    elkarrizketa.sendall(dataEtaOrdua.encode())
+                }else{
+                    #errore 05 bueltatzen du emandako parametroak txarto idatzita badaude
+                }
 			}else if(komandoa=="TME"){
 
 			}else if(komandoa=="IMG"){
