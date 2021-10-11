@@ -2,15 +2,15 @@ import socket, os, signal, re
 
 PORT = 50000
 
-function dataEtaOrduaEgiaztatu(dataEtaOrdua):
+def data_ordua_egiaztatu(data_ordua):
 	pattern = re.compile("^(19|20)[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[01])([01][0-9]|2[0-3])([0-5][0-9]){2}$")
-	if pattern.match(dataEtaOrdua)
+	if pattern.match(dataEtaOrdua):
 		return dataEtaOrdua
 	else:
 		return None
 
-function norabideaEgiaztatu(norabidea):
-	return (norabidea[0] == '-' or norabidea[0] == '+') and (int(norabidea[1:end:1])>0 and int(norabidea[1:end:1])<9999)
+def norabidea_egiaztatu(norabidea):
+	return (norabidea[0] == '-' or norabidea[0] == '+') and (int(norabidea[1:])>0 and int(norabidea[1:])<9999)
 
 s = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
 
@@ -33,39 +33,36 @@ while True:
 			komandoa = buf[0:2:1]
 			if komandoa=="DIR":
 				erantzuna = ""
-                norabidea = buf[3:end:1]
-                if norabideaEgiaztatu(norabidea):
-                    #datu-basetik irudia hartzen du eta bere data eta ordua bultatzen du.
-                    #errore 06 bueltatzen du emandako norabidearekin irudirik ez badago.
-                    if True:
-	                    dataEtaOrdua = " "
-	                    erantzuna = "OK+" + dataEtaOrdua
-                	else:
-                		erantzuna = "ER-06"
-                else:
-                    erantzuna = "ER-05"
-                elkarrizketa.sendall(erantzuna.encode())
-			else if(komandoa=="TME"):
+				norabidea = buf[3:]
+				if norabidea_egiaztatu(norabidea):
+					if True:	#DBan norabideari dagokion argazkiaren data eta ordua lortu.
+						dataEtaOrdua = " "
+						erantzuna = "OK+" + dataEtaOrdua
+					else:	#Norabidean irudirik ez badago errorea.
+						erantzuna = "ER-06"
+				else:
+					erantzuna = "ER-05"
+				elkarrizketa.sendall(erantzuna.encode())
+			elif komandoa=="TME":
 				erantzuna = ""
-				if dataEtaOrduaEgiaztatu(buf[3:end:1]) is None:
+				data_ordua = buf[3:end:1]
+				if data_ordua_egiaztatu(data_ordua) is None:
 					erantzuna = "ER-05"
 				else:
-					#DBan begiratu ez badago 07 errore kodea
-					if True:
+					if True:	#DBan data eta orduari dagokion argazkiaren norabidea lortu.
 						norabidea = " "
 						erantzuna = "OK+" + norabidea
-					else:
+					else:	#Data eta orduan irudirik ez badago errorea.
 						erantzuna = "ER-07"
 				elkarrizketa.sendall(erantzuna.encode())
-			else if(komandoa=="IMG"):
+			#elif komandoa=="IMG":
 
-			else if(komandoa=="QTY"):
-				
+			#elif komandoa=="QTY":
+
 			else:
 				elkarrizketa.sendall("ER-02".encode())
-		
+
 		print( "Konexioa ixteko eskaera jasota." )
 		elkarrizketa.close()
 		exit( 0 )
-s.close()
 
