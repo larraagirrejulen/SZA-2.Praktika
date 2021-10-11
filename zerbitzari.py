@@ -1,33 +1,38 @@
-import socket, os, signal, re
+import os
+import re
+import signal
+import socket
 
 PORT = 50000
 
-def data_ordua_egiaztatu(data_ordua):
+
+def data_ordua_egiaztatu(dat_ord):
 	pattern = re.compile("^(19|20)[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[01])([01][0-9]|2[0-3])([0-5][0-9]){2}$")
-	if pattern.match(dataEtaOrdua):
-		return dataEtaOrdua
+	if pattern.match(dat_ord):
+		return dat_ord
 	else:
 		return None
 
-def norabidea_egiaztatu(norabidea):
-	return (norabidea[0] == '-' or norabidea[0] == '+') and (int(norabidea[1:])>0 and int(norabidea[1:])<9999)
 
-s = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
+def norabidea_egiaztatu(norab):
+	return (norab[0] == '-' or norab[0] == '+') and (int(norab[1:])>0 and int(norab[1:])<9999)
 
-s.bind( ('', PORT) )
-s.listen( 5 )
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+s.bind(('', PORT))
+s.listen(5)
 
 signal.signal(signal.SIGCHLD, signal.SIG_IGN)
 
 while True:
 	elkarrizketa, bez_helb = s.accept()
-	print( "Bezeroa konektatuta {}:{}.".format( bez_helb[0], bez_helb[1] ) )
+	print("Bezeroa konektatuta {}:{}.".format(bez_helb[0], bez_helb[1]))
 	if os.fork():
 		elkarrizketa.close()
 	else:
 		s.close()
 		while True:
-			buf = elkarrizketa.recv( 1024 ).decode()
+			buf = elkarrizketa.recv(1024).decode()
 			if not buf:
 				break
 			komandoa = buf[0:2:1]
@@ -36,8 +41,8 @@ while True:
 				norabidea = buf[3:]
 				if norabidea_egiaztatu(norabidea):
 					if True:	#DBan norabideari dagokion argazkiaren data eta ordua lortu.
-						dataEtaOrdua = " "
-						erantzuna = "OK+" + dataEtaOrdua
+						data_ordua = " "
+						erantzuna = "OK+" + data_ordua
 					else:	#Norabidean irudirik ez badago errorea.
 						erantzuna = "ER-06"
 				else:
