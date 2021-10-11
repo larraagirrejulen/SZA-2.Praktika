@@ -4,14 +4,17 @@ import signal
 import socket
 
 PORT = 50000
+EOM = "\\r\\n"
 
 
 def data_ordua_egiaztatu(dat_ord):
 	pattern = re.compile("^(19|20)[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[01])([01][0-9]|2[0-3])([0-5][0-9]){2}$")
-	if pattern.match(dat_ord):
-		return dat_ord
+	if len(dat_ord)==18 and pattern.match(dat_ord[0:14]):
+		print("Data eta ordu egokiak.")
+		return True
 	else:
-		return None
+		print("Data eta orduak ez datoz bat protokoloarekin!!!")
+		return False
 
 
 def norabidea_egiaztatu(norab):
@@ -35,31 +38,34 @@ while True:
 			buf = elkarrizketa.recv(1024).decode()
 			if not buf:
 				break
-			komandoa = buf[0:2:1]
+			while not buf.endswith(EOM):
+				buf += elkarrizketa.recv(1024).decode()
+			print("Jasotako mezua: " + buf)
+			komandoa = buf[0:3]
+			gainontzekoa = buf[3:]
+
 			if komandoa=="DIR":
-				erantzuna = ""
+				erantzuna = "ER-06"	#Irudirik ez dagoeneko balioa.
 				norabidea = buf[3:]
 				if norabidea_egiaztatu(norabidea):
 					if True:	#DBan norabideari dagokion argazkiaren data eta ordua lortu.
 						data_ordua = " "
 						erantzuna = "OK+" + data_ordua
-					else:	#Norabidean irudirik ez badago errorea.
-						erantzuna = "ER-06"
 				else:
 					erantzuna = "ER-05"
-				elkarrizketa.sendall(erantzuna.encode())
+				elkarrizketa.sendall((erantzuna + EOM).encode())
+
 			elif komandoa=="TME":
-				erantzuna = ""
-				data_ordua = buf[3:end:1]
-				if data_ordua_egiaztatu(data_ordua) is None:
+				erantzuna = "ER-07"	#Irudirik ez dagoeneko balioa.
+				if data_ordua_egiaztatu(gainontzekoa) == False:
+					print("Errore kodea bidaltzen...")
 					erantzuna = "ER-05"
-				else:
-					if True:	#DBan data eta orduari dagokion argazkiaren norabidea lortu.
-						norabidea = " "
-						erantzuna = "OK+" + norabidea
-					else:	#Data eta orduan irudirik ez badago errorea.
-						erantzuna = "ER-07"
-				elkarrizketa.sendall(erantzuna.encode())
+				elif True:	#DBan data eta orduari dagokion argazkiaren norabidea lortu.
+					print("Norabidea bidaltzen...")
+					norabidea = " "
+					erantzuna = "OK+" + norabidea
+				elkarrizketa.sendall((erantzuna + EOM).encode())
+
 			#elif komandoa=="IMG":
 
 			#elif komandoa=="QTY":
@@ -67,7 +73,7 @@ while True:
 			else:
 				elkarrizketa.sendall("ER-02".encode())
 
-		print( "Konexioa ixteko eskaera jasota." )
+		print("Konexioa ixteko eskaera jasota.\n")
 		elkarrizketa.close()
 		exit( 0 )
 

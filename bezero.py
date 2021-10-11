@@ -20,11 +20,11 @@ while True:
 	if not mezua:
 		break
 	s.sendall(mezua.encode())
-	jasotzekoak = len(mezua.encode())
-	mezua = b""
-	while jasotzekoak:
-		buf = s.recv(jasotzekoak)
-		mezua += buf
-		jasotzekoak -= len(buf)
-	print(mezua.decode())
+	erantzuna = s.recv(1024).decode()
+	while not erantzuna.endswith("\\r\\n"):
+		erantzuna += s.recv(1024).decode()
+
+	erantzuna = erantzuna[0:5]
+	print("Jasotako erantzuna => " + erantzuna + ": ")
+	print("Sartu bidali nahi duzun mezua (hutsa bukatzeko):")
 s.close()
