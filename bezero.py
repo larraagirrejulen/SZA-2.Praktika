@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from sys import argv
 from socket import SOCK_STREAM, socket, AF_INET
 
@@ -19,12 +17,12 @@ while True:
 	mezua = input()
 	if not mezua:
 		break
-	s.sendall(mezua.encode())
+	s.sendall((mezua + "\r\n").encode())
 	erantzuna = s.recv(1024).decode()
-	while not erantzuna.endswith("\\r\\n"):
+	while not erantzuna.endswith("\r\n"):
 		erantzuna += s.recv(1024).decode()
 
 	erantzuna = erantzuna[0:5]
-	print("Jasotako erantzuna => " + erantzuna + ": ")
-	print("Sartu bidali nahi duzun mezua (hutsa bukatzeko):")
+	print("Jasotako erantzuna: " + erantzuna)
+	print("\nSartu bidali nahi duzun mezua (hutsa bukatzeko):")
 s.close()

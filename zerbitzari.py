@@ -4,12 +4,13 @@ import signal
 import socket
 
 PORT = 50000
-EOM = "\\r\\n"
+EOM = "\r\n"
 
 
 def data_ordua_egiaztatu(dat_ord):
+	print(len(dat_ord))
 	pattern = re.compile("^(19|20)[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[01])([01][0-9]|2[0-3])([0-5][0-9]){2}$")
-	if len(dat_ord)==18 and pattern.match(dat_ord[0:14]):
+	if len(dat_ord)==16 and pattern.match(dat_ord[0:14]):
 		print("Data eta ordu egokiak.")
 		return True
 	else:
@@ -46,8 +47,7 @@ while True:
 
 			if komandoa=="DIR":
 				erantzuna = "ER-06"	#Irudirik ez dagoeneko balioa.
-				norabidea = buf[3:]
-				if norabidea_egiaztatu(norabidea):
+				if norabidea_egiaztatu(gainontzekoa):
 					if True:	#DBan norabideari dagokion argazkiaren data eta ordua lortu.
 						data_ordua = " "
 						erantzuna = "OK+" + data_ordua
