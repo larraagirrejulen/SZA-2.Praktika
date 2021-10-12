@@ -4,7 +4,7 @@ from socket import SOCK_STREAM, socket, AF_INET
 PORT = 50000
 
 if len(argv) != 2:
-	print( "Erabilera: {} <zerbitzaria>".format(argv[0]))
+	print("Erabilera: {} <zerbitzaria>".format(argv[0]))
 	exit(1)
 
 zerb_helb = (argv[1], PORT)
@@ -12,7 +12,7 @@ zerb_helb = (argv[1], PORT)
 s = socket(AF_INET, SOCK_STREAM)
 s.connect(zerb_helb)
 
-print( "Sartu bidali nahi duzun mezua (hutsa bukatzeko):" )
+print("Sartu bidali nahi duzun mezua (hutsa bukatzeko):")
 while True:
 	mezua = input()
 	if not mezua:

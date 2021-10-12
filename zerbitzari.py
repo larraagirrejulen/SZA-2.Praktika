@@ -8,9 +8,8 @@ EOM = "\r\n"
 
 
 def data_ordua_egiaztatu(dat_ord):
-	print(len(dat_ord))
 	pattern = re.compile("^(19|20)[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[01])([01][0-9]|2[0-3])([0-5][0-9]){2}$")
-	if len(dat_ord)==16 and pattern.match(dat_ord[0:14]):
+	if len(dat_ord) == 16 and pattern.match(dat_ord[0:14]):
 		print("Data eta ordu egokiak.")
 		return True
 	else:
@@ -19,7 +18,13 @@ def data_ordua_egiaztatu(dat_ord):
 
 
 def norabidea_egiaztatu(norab):
-	return (norab[0] == '-' or norab[0] == '+') and (int(norab[1:])>0 and int(norab[1:])<9999)
+	if len(norab) == 13 and (norab[0] == '-' or norab[0] == '+') and (int(norab[1:]) > 0 and int(norab[1:]) < 9999):
+		print("Norabide egokia.")
+		return True
+	else:
+		print("Norabidea ez dator bat protokoloarekin!!!")
+		return False
+
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -45,25 +50,30 @@ while True:
 			komandoa = buf[0:3]
 			gainontzekoa = buf[3:]
 
-			if komandoa=="DIR":
-				erantzuna = "ER-06"	#Irudirik ez dagoeneko balioa.
-				if norabidea_egiaztatu(gainontzekoa):
-					if True:	#DBan norabideari dagokion argazkiaren data eta ordua lortu.
-						data_ordua = " "
-						erantzuna = "OK+" + data_ordua
-				else:
-					erantzuna = "ER-05"
-				elkarrizketa.sendall((erantzuna + EOM).encode())
-
-			elif komandoa=="TME":
-				erantzuna = "ER-07"	#Irudirik ez dagoeneko balioa.
-				if data_ordua_egiaztatu(gainontzekoa) == False:
+			if komandoa == "DIR":
+				if norabidea_egiaztatu(gainontzekoa) is False:
 					print("Errore kodea bidaltzen...")
 					erantzuna = "ER-05"
-				elif True:	#DBan data eta orduari dagokion argazkiaren norabidea lortu.
+				elif True:		#DBan norabideari dagokion argazkiaren data eta ordua lortu.
+					print("Data eta ordua bidaltzen...")
+					data_ordua = " "
+					erantzuna = "OK+" + data_ordua
+				else:
+					print("Ez da aurkitu argazkirik.\nErrore kodea bidaltzen...")
+					erantzuna = "ER-06"
+				elkarrizketa.sendall((erantzuna + EOM).encode())
+
+			elif komandoa == "TME":
+				if data_ordua_egiaztatu(gainontzekoa) is False:
+					print("Errore kodea bidaltzen...")
+					erantzuna = "ER-05"
+				elif True:		#DBan data eta orduari dagokion argazkiaren norabidea lortu.
 					print("Norabidea bidaltzen...")
 					norabidea = " "
 					erantzuna = "OK+" + norabidea
+				else:
+					print("Ez da aurkitu argazkirik.\nErrore kodea bidaltzen...")
+					erantzuna = "ER-07"
 				elkarrizketa.sendall((erantzuna + EOM).encode())
 
 			#elif komandoa=="IMG":
@@ -75,5 +85,4 @@ while True:
 
 		print("Konexioa ixteko eskaera jasota.\n")
 		elkarrizketa.close()
-		exit( 0 )
-
+		exit(0)
