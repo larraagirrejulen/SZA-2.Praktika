@@ -18,7 +18,8 @@ def data_ordua_egiaztatu(dat_ord):
 
 
 def norabidea_egiaztatu(norab):
-	if len(norab) == 13 and (norab[0] == '-' or norab[0] == '+') and (int(norab[1:]) > 0 and int(norab[1:]) < 9999):
+	pattern = re.compile("^(\+|\-)(9000|[0-8][0-9]{3})([01][0-9]|2[0-3])([0-5][0-9]){2}$")
+	if len(norab) == 13 and pattern.match(norab[0:11]):
 		print("Norabide egokia.")
 		return True
 	else:
