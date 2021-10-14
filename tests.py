@@ -1,4 +1,5 @@
 import re
+from data_access import DataAccess
 
 
 print("START")
@@ -13,3 +14,8 @@ if pattern.match("+1234235959"):
     print("funciona")
 else:
     print("nope funciona")
+
+
+# db = DataAccess()
+# db.initialize()
+# db.close()
