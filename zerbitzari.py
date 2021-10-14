@@ -15,7 +15,7 @@ def data_ordua_egiaztatu(dat_ord):
 	pattern = re.compile("^(19|20)[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[01])([01][0-9]|2[0-3])([0-5][0-9]){2}$")
 	if len(dat_ord) == 14 and pattern.match(dat_ord):
 		print("Data eta ordu egokia.")
-		return dat_ord[0:14]
+		return dat_ord
 	elif len(dat_ord) == 28 and pattern.match(dat_ord[0:14]) and pattern.match(dat_ord[14:28]):
 		print("Datak eta orduak egokiak.")
 		return dat_ord
@@ -56,29 +56,31 @@ while True:
 				buf += elkarrizketa.recv(1024).decode()
 			print("Jasotako mezua: " + buf)
 			komandoa = buf[0:3]
-			gainontzekoa = buf[3:len(gainontzekoa-2)]
+			gainontzekoa = buf[3:]
+			parametroa = gainontzekoa[0:len(gainontzekoa)-2]
 			db = DataAccess()
 			if komandoa == "DIR":
-				if norabidea_egiaztatu(gainontzekoa) is False:
+				if norabidea_egiaztatu(parametroa) is False:
 					erantzuna = ER5
-				elif db.get_data_ordua_by_norabide(gainontzekoa) != 0:		#DBan norabideari dagokion argazkiaren data eta ordua lortu.
-					erantzuna = OK + db.get_data_ordua_by_norabide(gainontzekoa)
+				elif db.get_data_ordua_by_norabide(parametroa) != 0:		#DBan norabideari dagokion argazkiaren data eta ordua lortu.
+					erantzuna = OK + db.get_data_ordua_by_norabide(parametroa)
 				else:
 					erantzuna = ER + "06"
 				elkarrizketa.sendall((erantzuna + EOM).encode())
 
 			elif komandoa == "TME":
-				data_ordua = data_ordua_egiaztatu(gainontzekoa)
+				data_ordua = data_ordua_egiaztatu(parametroa)
 				if data_ordua is None:
 					erantzuna = ER5
-				elif db.get_norabide_by_data_ordua(gainontzekoa) is not None:		#DBan data eta orduari dagokion argazkiaren norabidea lortu.
-					erantzuna = OK + db.get_norabide_by_data_ordua(gainontzekoa)
+				elif db.get_norabide_by_data_ordua(parametroa) is not None:		#DBan data eta orduari dagokion argazkiaren norabidea lortu.
+					erantzuna = OK + db.get_norabide_by_data_ordua(parametroa)[0]
 				else:
 					erantzuna = ER + "07"
+					print("Ez dago argazkirik emandako data eta orduan.")
 				elkarrizketa.sendall((erantzuna + EOM).encode())
 
 			elif komandoa == "IMG":
-				data_ordua = data_ordua_egiaztatu(gainontzekoa)
+				data_ordua = data_ordua_egiaztatu(parametroa)
 				if data_ordua is None:
 					erantzuna = ER5
 				elif len(data_ordua) == 28:

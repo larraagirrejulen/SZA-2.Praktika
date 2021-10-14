@@ -47,7 +47,8 @@ class DataAccess:
 
     def get_norabide_by_data_ordua(self, data_ordua):
         self.c.execute("SELECT norabidea FROM irudiak WHERE data_ordua==:data_ordua", {'data_ordua': data_ordua})
-        return self.c.fetchone()
+        value = self.c.fetchone()
+        return value
 
     def close(self):
         self.connection.close()

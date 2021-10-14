@@ -22,7 +22,6 @@ while True:
 	while not erantzuna.endswith("\r\n"):
 		erantzuna += s.recv(1024).decode()
 
-	erantzuna = erantzuna[0:5]
 	print("Jasotako erantzuna: " + erantzuna)
 	print("\nSartu bidali nahi duzun mezua (hutsa bukatzeko):")
 s.close()
