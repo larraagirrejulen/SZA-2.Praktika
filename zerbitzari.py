@@ -5,6 +5,10 @@ import socket
 
 PORT = 50000
 EOM = "\r\n"
+OK = "OK+"
+ER = "ER-"
+ER5 = ER + "05"
+
 
 
 def data_ordua_egiaztatu(dat_ord):
@@ -53,36 +57,31 @@ while True:
 
 			if komandoa == "DIR":
 				if norabidea_egiaztatu(gainontzekoa) is False:
-					print("Errore kodea bidaltzen...")
-					erantzuna = "ER-05"
+					erantzuna = ER5
 				elif True:		#DBan norabideari dagokion argazkiaren data eta ordua lortu.
-					print("Data eta ordua bidaltzen...")
 					data_ordua = " "
-					erantzuna = "OK+" + data_ordua
+					erantzuna = OK + data_ordua
 				else:
-					print("Ez da aurkitu argazkirik.\nErrore kodea bidaltzen...")
-					erantzuna = "ER-06"
+					erantzuna = ER + "06"
 				elkarrizketa.sendall((erantzuna + EOM).encode())
 
 			elif komandoa == "TME":
 				if data_ordua_egiaztatu(gainontzekoa) is False:
-					print("Errore kodea bidaltzen...")
-					erantzuna = "ER-05"
+					erantzuna = ER5
 				elif True:		#DBan data eta orduari dagokion argazkiaren norabidea lortu.
-					print("Norabidea bidaltzen...")
 					norabidea = " "
-					erantzuna = "OK+" + norabidea
+					erantzuna = OK + norabidea
 				else:
-					print("Ez da aurkitu argazkirik.\nErrore kodea bidaltzen...")
-					erantzuna = "ER-07"
+					erantzuna = ER + "07"
 				elkarrizketa.sendall((erantzuna + EOM).encode())
 
-			#elif komandoa=="IMG":
-
+			elif komandoa=="IMG":
+				if data_ordua_egiaztatu(gainontzekoa) is False:
+					erantzuna = ER5
 			#elif komandoa=="QTY":
 
 			else:
-				elkarrizketa.sendall("ER-02".encode())
+				elkarrizketa.sendall((ER + "02" + EOM).encode())
 
 		print("Konexioa ixteko eskaera jasota.\n")
 		elkarrizketa.close()
