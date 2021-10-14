@@ -13,14 +13,14 @@ ER5 = ER + "05"
 def data_ordua_egiaztatu(dat_ord):
 	pattern = re.compile("^(19|20)[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[01])([01][0-9]|2[0-3])([0-5][0-9]){2}$")
 	if len(dat_ord) == 16 and pattern.match(dat_ord[0:14]):
-		print("Data eta ordu egokiak.")
-		return True
+		print("Data eta ordu egokia.")
+		return dat_ord[0:14]
 	elif len(dat_ord) == 30 and pattern.match(dat_ord[0:14]) and pattern.match(dat_ord[14:28]):
-		print("Data eta ordu egokiak.")
-		return True
+		print("Datak eta orduak egokiak.")
+		return dat_ord[0:28]
 	else:
-		print("Data eta orduak ez datoz bat protokoloarekin!!!")
-		return False
+		print("Data eta ordua ez datoz bat protokoloarekin!!!")
+		return None
 
 
 def norabidea_egiaztatu(norab):
@@ -68,7 +68,8 @@ while True:
 				elkarrizketa.sendall((erantzuna + EOM).encode())
 
 			elif komandoa == "TME":
-				if data_ordua_egiaztatu(gainontzekoa) is False:
+				data_ordua = data_ordua_egiaztatu(gainontzekoa)
+				if data_ordua is None:
 					erantzuna = ER5
 				elif True:		#DBan data eta orduari dagokion argazkiaren norabidea lortu.
 					norabidea = " "
@@ -78,11 +79,15 @@ while True:
 				elkarrizketa.sendall((erantzuna + EOM).encode())
 
 			elif komandoa == "IMG":
-				if data_ordua_egiaztatu(gainontzekoa) is False:
+				data_ordua = data_ordua_egiaztatu(gainontzekoa)
+				if data_ordua is None:
 					erantzuna = ER5
-				elif True:		#Iruida DBan dagoen ikusi
+				elif len(data_ordua) == 28:
+					irudia = "Tarteko argazki kopurua"
+					erantzuna = OK + irudia
+				elif len(data_ordua) == 14:
 					if True:		#Irudia DBtik lortu
-						irudia = "irudiaren tamaina # irudia"
+						irudia = "Irudiaren tamaina # irudia"
 						erantzuna = OK + irudia
 					else:		#Irudia ezin bada lortu errorrea
 						erantzuna = ER + "09"
