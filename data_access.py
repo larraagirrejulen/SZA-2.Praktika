@@ -27,7 +27,7 @@ class DataAccess:
                                 )""")
 
         irudi_1 = Irudia(20201010101010, "+9000123456", self.convert_to_binary_data("irudiak/irudi_1.jpg"))
-        irudi_2 = Irudia(20201212121212, "-9000123456", self.convert_to_binary_data("irudiak/irudi_2.jpg"))
+        irudi_2 = Irudia(20201212121212, "+9000123456", self.convert_to_binary_data("irudiak/irudi_2.jpg"))
 
         self.insert_image(irudi_1)
         self.insert_image(irudi_2)
@@ -41,14 +41,17 @@ class DataAccess:
         self.c.execute("SELECT data_ordua FROM irudiak WHERE norabidea==:norabidea", {'norabidea': norabide})
         azkena = 0
         for do in self.c.fetchall():
-            if do > azkena:
-                azkena = do
-        return azkena
+            if do[0] > azkena:
+                azkena = do[0]
+        print(azkena)
+        if azkena == 0:
+            return None
+        return str(azkena)
 
     def get_norabide_by_data_ordua(self, data_ordua):
         self.c.execute("SELECT norabidea FROM irudiak WHERE data_ordua==:data_ordua", {'data_ordua': data_ordua})
         value = self.c.fetchone()
-        return value
+        return value[0]
 
     def close(self):
         self.connection.close()

@@ -56,15 +56,15 @@ while True:
 				buf += elkarrizketa.recv(1024).decode()
 			print("Jasotako mezua: " + buf)
 			komandoa = buf[0:3]
-			gainontzekoa = buf[3:]
-			parametroa = gainontzekoa[0:len(gainontzekoa)-2]
+			parametroa = buf[3:len(buf)-2]
 			db = DataAccess()
 			if komandoa == "DIR":
 				if norabidea_egiaztatu(parametroa) is False:
 					erantzuna = ER5
-				elif db.get_data_ordua_by_norabide(parametroa) != 0:		#DBan norabideari dagokion argazkiaren data eta ordua lortu.
+				elif db.get_data_ordua_by_norabide(parametroa) is not None:		#DBan norabideari dagokion argazkiaren data eta ordua lortu.
 					erantzuna = OK + db.get_data_ordua_by_norabide(parametroa)
 				else:
+					print("Ez dago argazkirik emandako norabidean!")
 					erantzuna = ER + "06"
 				elkarrizketa.sendall((erantzuna + EOM).encode())
 
@@ -73,10 +73,10 @@ while True:
 				if data_ordua is None:
 					erantzuna = ER5
 				elif db.get_norabide_by_data_ordua(parametroa) is not None:		#DBan data eta orduari dagokion argazkiaren norabidea lortu.
-					erantzuna = OK + db.get_norabide_by_data_ordua(parametroa)[0]
+					erantzuna = OK + db.get_norabide_by_data_ordua(parametroa)
 				else:
+					print("Ez dago argazkirik emandako data eta orduan!")
 					erantzuna = ER + "07"
-					print("Ez dago argazkirik emandako data eta orduan.")
 				elkarrizketa.sendall((erantzuna + EOM).encode())
 
 			elif komandoa == "IMG":
