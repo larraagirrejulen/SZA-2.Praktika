@@ -68,56 +68,83 @@ while True:
 
 			# Parametrorik ez bada jasotzen errorea kodea bidali
 			if len(parametroa) == 0:
-				elkarrizketa.sendall((ER + "04" + EOM).encode())
+				erantzuna = ER + "04" + EOM
 
 			# DIR komandoaren tratamendua
 			elif komandoa == "DIR":
 				if norabidea_egiaztatu(parametroa) is False:
-					erantzuna = ER5		# Formatu desegokia
+					erantzuna = ER5 + EOM		# Formatu desegokia
 				else:
 					data_ordua = db.get_data_ordua_by_norabide(parametroa)
 					if data_ordua is not None:
-						erantzuna = OK + data_ordua
+						erantzuna = OK + data_ordua + EOM
 					else:
-						erantzuna = ER + "06"
-				elkarrizketa.sendall((erantzuna + EOM).encode())
+						erantzuna = ER + "06" + EOM		# Norabide horretan argazkirik ez dago
 
 			# TME komandoaren tratamendua
 			elif komandoa == "TME":
 				if data_ordua_egiaztatu(parametroa, komandoa) is None:
-					erantzuna = ER5
+					erantzuna = ER5 + EOM		# Formatu desegokia
 				else:
 					norabidea = db.get_norabide_by_data_ordua(parametroa)
 					if norabidea is not None:
-						erantzuna = OK + norabidea
+						erantzuna = OK + norabidea + EOM
 					else:
-						erantzuna = ER + "07"
-				elkarrizketa.sendall((erantzuna + EOM).encode())
+						erantzuna = ER + "07" + EOM		# Data eta ordu horretan argazkirik ez dago
 
 			# IMG komandoaren tratamendua
 			elif komandoa == "IMG":
 				data_ordua = data_ordua_egiaztatu(parametroa, komandoa)
 				if data_ordua is None:
-					erantzuna = ER5
+					erantzuna = ER5 + EOM		# Formatu desegokia
+
+				# Irudi bakarreko eskaera
 				elif len(data_ordua) == 14:
 					irudia = db.get_irudi_by_data_ordua(data_ordua)
 					if irudia is not None:
 						tamaina = str(len(irudia))
 						erantzuna = OK + tamaina + "#" + irudia
-						elkarrizketa.sendall(erantzuna.encode())
-					else:		# Irudia ezin bada lortu errorrea
-						erantzuna = ER + "09"
-				elif len(data_ordua) == 28:
-					irudia = "Tarteko argazki kopurua"
-					erantzuna = OK + irudia
-				else:
-					erantzuna = ER + "08"
+					else:
+						erantzuna = ER + "08" + EOM  # Data eta ordu horretan argazkirik ez dago
 
-			# elif komandoa == "QTY":
+				# Irudi anitzeko eskaera
+				else:
+					zenbat = db.count_irudi_by_data_orduak(data_ordua[0:14], data_ordua[14:28])
+					elkarrizketa.sendall((OK + zenbat + EOM).encode())
+					if zenbat > 0:
+						buf = elkarrizketa.recv(1024).decode()
+						if not buf:
+							break
+						while not buf.endswith(EOM):
+							buf += elkarrizketa.recv(1024).decode()
+						komandoa = buf[0:3]
+						parametroa = buf[3:len(buf) - 2]
+						if komandoa == "QTY":
+							if parametroa > zenbat:
+								erantzuna = ER + "10" + EOM
+							else:
+								irudiak = db.get_irudi_by_data_orduak(data_ordua[0:14], data_ordua[14:28])
+								erantzuna = OK
+								for i in irudiak:
+									if parametroa == 0:
+										break
+									else:
+										parametroa -= 1
+										erantzuna += str(len(i)) + "#" + i
+						else:
+							erantzuna = ER + "01" + EOM
+					else:
+						erantzuna = OK + EOM
+
+			# Espero ez den komandoa jasotzen badu errore kodea bidali
+			elif komandoa == "QTY":
+				erantzuna = ER + "01" + EOM
 
 			# Komando ezezaguna bada errore kodea bidali
 			else:
-				elkarrizketa.sendall((ER + "02" + EOM).encode())
+				erantzuna = ER + "02" + EOM
+
+			elkarrizketa.sendall(erantzuna.encode())
 
 		print("Konexioa ixteko eskaera jasota.\n")
 		elkarrizketa.close()

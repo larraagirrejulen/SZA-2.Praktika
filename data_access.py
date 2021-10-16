@@ -63,5 +63,17 @@ class DataAccess:
         print(len(value))
         return value[0]
 
+    def count_irudi_by_data_orduak(self, data_ordua1, data_ordua2):
+        self.c.execute("SELECT argazkia FROM irudiak WHERE (data_ordua>=:data_ordua1 AND data_ordua<=:data_ordua2) OR "
+                       "(data_ordua>=:data_ordua2 AND data_ordua<=:data_ordua1)",
+                       {'data_ordua1': data_ordua1, 'data_ordua2': data_ordua2})
+        return self.c.fetchall().__len__()
+
+    def get_irudi_by_data_orduak(self, data_ordua1, data_ordua2):
+        self.c.execute("SELECT argazkia FROM irudiak WHERE (data_ordua>=:data_ordua1 AND data_ordua<=:data_ordua2) OR "
+                       "(data_ordua>=:data_ordua2 AND data_ordua<=:data_ordua1)",
+                       {'data_ordua1': data_ordua1, 'data_ordua2': data_ordua2})
+        return self.c.fetchall()
+
     def close(self):
         self.connection.close()
