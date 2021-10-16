@@ -45,12 +45,22 @@ class DataAccess:
                 azkena = do[0]
         print(azkena)
         if azkena == 0:
+            print("Ez dago argazkirik emandako norabidean!")
             return None
         return str(azkena)
 
     def get_norabide_by_data_ordua(self, data_ordua):
         self.c.execute("SELECT norabidea FROM irudiak WHERE data_ordua==:data_ordua", {'data_ordua': data_ordua})
         value = self.c.fetchone()
+        if value is None:
+            print("Ez dago argazkirik emandako data eta orduan!")
+        return value[0]
+
+    def get_irudi_by_data_ordua(self, data_ordua):
+        self.c.execute("SELECT argazkia FROM irudiak WHERE data_ordua==:data_ordua", {'data_ordua': data_ordua})
+        value = self.c.fetchone()
+        print(value)
+        print(len(value))
         return value[0]
 
     def close(self):
