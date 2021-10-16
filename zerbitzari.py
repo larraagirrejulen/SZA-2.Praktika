@@ -8,7 +8,6 @@ PORT = 50000
 EOM = "\r\n"
 OK = "OK+"
 ER = "ER-"
-ER5 = ER + "05"
 
 # Socketak sortu eta konfiguratu
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -40,6 +39,19 @@ def norabidea_egiaztatu(norab):
 		return False
 
 
+# Erantzun mezua sortzeko funtzioa
+def erantzun_mezua_sortu(erantzun):
+	regex = re.compile("^(0[0-9])|(1[0-1])$")
+	if regex.match(erantzun):
+		return ER + erantzun + EOM
+	elif erantzun.__contains__("#"):
+		return OK + erantzun
+	elif erantzun == "":
+		return OK + EOM
+	else:
+		return OK + erantzun + EOM
+
+
 # Datu basea ireki
 db = DataAccess()
 
@@ -68,44 +80,44 @@ while True:
 
 			# Parametrorik ez bada jasotzen errorea kodea bidali
 			if len(parametroa) == 0:
-				erantzuna = ER + "04" + EOM
+				erantzuna = "04"
 
 			# DIR komandoaren tratamendua
 			elif komandoa == "DIR":
 				if norabidea_egiaztatu(parametroa) is False:
-					erantzuna = ER5 + EOM		# Formatu desegokia
+					erantzuna = "05"		# Formatu desegokia
 				else:
 					data_ordua = db.get_data_ordua_by_norabide(parametroa)
 					if data_ordua is not None:
-						erantzuna = OK + data_ordua + EOM
+						erantzuna = data_ordua
 					else:
-						erantzuna = ER + "06" + EOM		# Norabide horretan argazkirik ez dago
+						erantzuna = "06"		# Norabide horretan argazkirik ez dago
 
 			# TME komandoaren tratamendua
 			elif komandoa == "TME":
 				if data_ordua_egiaztatu(parametroa, komandoa) is None:
-					erantzuna = ER5 + EOM		# Formatu desegokia
+					erantzuna = "05"		# Formatu desegokia
 				else:
 					norabidea = db.get_norabide_by_data_ordua(parametroa)
 					if norabidea is not None:
-						erantzuna = OK + norabidea + EOM
+						erantzuna = norabidea
 					else:
-						erantzuna = ER + "07" + EOM		# Data eta ordu horretan argazkirik ez dago
+						erantzuna = "07"		# Data eta ordu horretan argazkirik ez dago
 
 			# IMG komandoaren tratamendua
 			elif komandoa == "IMG":
 				data_ordua = data_ordua_egiaztatu(parametroa, komandoa)
 				if data_ordua is None:
-					erantzuna = ER5 + EOM		# Formatu desegokia
+					erantzuna = "05"		# Formatu desegokia
 
 				# Irudi bakarreko eskaera
 				elif len(data_ordua) == 14:
 					irudia = db.get_irudi_by_data_ordua(data_ordua)
 					if irudia is not None:
 						tamaina = str(len(irudia))
-						erantzuna = OK + tamaina + "#" + irudia
+						erantzuna = tamaina + "#" + irudia
 					else:
-						erantzuna = ER + "08" + EOM  # Data eta ordu horretan argazkirik ez dago
+						erantzuna = "08"  # Data eta ordu horretan argazkirik ez dago
 
 				# Irudi anitzeko eskaera
 				else:
@@ -121,10 +133,10 @@ while True:
 						parametroa = buf[3:len(buf) - 2]
 						if komandoa == "QTY":
 							if parametroa > zenbat:
-								erantzuna = ER + "10" + EOM
+								erantzuna = "10"
 							else:
 								irudiak = db.get_irudi_by_data_orduak(data_ordua[0:14], data_ordua[14:28])
-								erantzuna = OK
+								erantzuna = ""
 								for i in irudiak:
 									if parametroa == 0:
 										break
@@ -132,19 +144,20 @@ while True:
 										parametroa -= 1
 										erantzuna += str(len(i)) + "#" + i
 						else:
-							erantzuna = ER + "01" + EOM
+							erantzuna = "01"
 					else:
-						erantzuna = OK + EOM
+						erantzuna = None
 
 			# Espero ez den komandoa jasotzen badu errore kodea bidali
 			elif komandoa == "QTY":
-				erantzuna = ER + "01" + EOM
+				erantzuna = "01"
 
 			# Komando ezezaguna bada errore kodea bidali
 			else:
-				erantzuna = ER + "02" + EOM
+				erantzuna = "02"
 
-			elkarrizketa.sendall(erantzuna.encode())
+			if erantzuna is not None:
+				elkarrizketa.sendall(erantzun_mezua_sortu(erantzuna).encode())
 
 		print("Konexioa ixteko eskaera jasota.\n")
 		elkarrizketa.close()
