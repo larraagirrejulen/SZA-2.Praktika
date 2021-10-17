@@ -18,7 +18,6 @@ class DataAccess:
     def __init__(self):
         self.connection = sqlite3.connect('irudiak.db')
         self.c = self.connection.cursor()
-        self.connection.close()
 
     def initialize(self):
         self.c.execute("""CREATE TABLE irudiak(
@@ -77,10 +76,6 @@ class DataAccess:
                        "(data_ordua>=:data_ordua2 AND data_ordua<=:data_ordua1)",
                        {'data_ordua1': data_ordua1, 'data_ordua2': data_ordua2})
         return self.c.fetchall()
-
-    def open(self):
-        self.connection = sqlite3.connect('irudiak.db')
-        self.c = self.connection.cursor()
 
     def close(self):
         self.connection.close()
