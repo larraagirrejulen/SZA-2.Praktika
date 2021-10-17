@@ -18,6 +18,7 @@ class DataAccess:
     def __init__(self):
         self.connection = sqlite3.connect('irudiak.db')
         self.c = self.connection.cursor()
+        self.connection.close()
 
     def initialize(self):
         self.c.execute("""CREATE TABLE irudiak(
@@ -28,9 +29,11 @@ class DataAccess:
 
         irudi_1 = Irudia(20201010101010, "+9000123456", self.convert_to_binary_data("irudiak/irudi_1.jpg"))
         irudi_2 = Irudia(20201212121212, "+9000123456", self.convert_to_binary_data("irudiak/irudi_2.jpg"))
+        irudi_3 = Irudia(20171212121212, "-9000123456", self.convert_to_binary_data("irudiak/irudi_3.jpg"))
 
         self.insert_image(irudi_1)
         self.insert_image(irudi_2)
+        self.insert_image(irudi_3)
 
     def insert_image(self, image):
         self.c.execute("INSERT INTO irudiak VALUES (:data_ordua, :norabidea, :irudia)",
@@ -64,16 +67,20 @@ class DataAccess:
         return value[0]
 
     def count_irudi_by_data_orduak(self, data_ordua1, data_ordua2):
-        self.c.execute("SELECT argazkia FROM irudiak WHERE (data_ordua>=:data_ordua1 AND data_ordua<=:data_ordua2) OR "
-                       "(data_ordua>=:data_ordua2 AND data_ordua<=:data_ordua1)",
+        self.c.execute("SELECT argazkia FROM irudiak WHERE ((data_ordua>=:data_ordua1 AND data_ordua<=:data_ordua2) OR "
+                       "(data_ordua>=:data_ordua2 AND data_ordua<=:data_ordua1))",
                        {'data_ordua1': data_ordua1, 'data_ordua2': data_ordua2})
-        return self.c.fetchall().__len__()
+        return len(self.c.fetchall())
 
     def get_irudi_by_data_orduak(self, data_ordua1, data_ordua2):
         self.c.execute("SELECT argazkia FROM irudiak WHERE (data_ordua>=:data_ordua1 AND data_ordua<=:data_ordua2) OR "
                        "(data_ordua>=:data_ordua2 AND data_ordua<=:data_ordua1)",
                        {'data_ordua1': data_ordua1, 'data_ordua2': data_ordua2})
         return self.c.fetchall()
+
+    def open(self):
+        self.connection = sqlite3.connect('irudiak.db')
+        self.c = self.connection.cursor()
 
     def close(self):
         self.connection.close()

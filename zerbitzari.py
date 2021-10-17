@@ -52,7 +52,7 @@ def erantzun_mezua_sortu(erantzun):
 		return OK + erantzun + EOM
 
 
-# Datu basea ireki
+# Datu base objetua sortu
 db = DataAccess()
 
 while True:
