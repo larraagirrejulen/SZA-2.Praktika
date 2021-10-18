@@ -61,8 +61,6 @@ class DataAccess:
     def get_irudi_by_data_ordua(self, data_ordua):
         self.c.execute("SELECT argazkia FROM irudiak WHERE data_ordua==:data_ordua", {'data_ordua': data_ordua})
         value = self.c.fetchone()
-        print(value)
-        print(len(value))
         return value[0]
 
     def count_irudi_by_data_orduak(self, data_ordua1, data_ordua2):

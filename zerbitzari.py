@@ -44,8 +44,6 @@ def erantzun_mezua_sortu(erantzun):
 	regex = re.compile("^(0[0-9])|(1[0-1])$")
 	if regex.match(erantzun):
 		return ER + erantzun + EOM
-	elif erantzun.__contains__("#"):
-		return OK + erantzun
 	elif erantzun == "":
 		return OK + EOM
 	else:
@@ -115,7 +113,10 @@ while True:
 					irudia = db.get_irudi_by_data_ordua(data_ordua)
 					if irudia is not None:
 						tamaina = str(len(irudia))
-						erantzuna = tamaina + "#" + irudia
+						erantzuna = OK + tamaina + "#"
+						elkarrizketa.sendall(erantzuna.encode())
+						elkarrizketa.sendall(irudia)
+						erantzuna = None		# Berriro bidalketarik ez egiteko
 					else:
 						erantzuna = "08"  # Data eta ordu horretan argazkirik ez dago
 
