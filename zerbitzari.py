@@ -123,7 +123,7 @@ while True:
 				# Irudi anitzeko eskaera
 				else:
 					zenbat = db.count_irudi_by_data_orduak(data_ordua[0:14], data_ordua[14:28])
-					elkarrizketa.sendall((OK + zenbat + EOM).encode())
+					elkarrizketa.sendall((OK + str(zenbat) + EOM).encode())
 					if zenbat > 0:
 						buf = elkarrizketa.recv(1024).decode()
 						if not buf:
@@ -131,7 +131,7 @@ while True:
 						while not buf.endswith(EOM):
 							buf += elkarrizketa.recv(1024).decode()
 						komandoa = buf[0:3]
-						parametroa = buf[3:len(buf) - 2]
+						parametroa = int(buf[3:len(buf) - 2])
 						if komandoa == "QTY":
 							if parametroa > zenbat:
 								erantzuna = "10"
