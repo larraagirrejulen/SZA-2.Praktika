@@ -118,7 +118,7 @@ while True:
 						elkarrizketa.sendall(irudia)
 						erantzuna = None		# Berriro bidalketarik ez egiteko
 					else:
-						erantzuna = "08"  # Data eta ordu horretan argazkirik ez dago
+						erantzuna = "08"		# Data eta ordu horretan argazkirik ez dago
 
 				# Irudi anitzeko eskaera
 				else:
@@ -134,20 +134,23 @@ while True:
 						parametroa = int(buf[3:len(buf) - 2])
 						if komandoa == "QTY":
 							if parametroa > zenbat:
-								erantzuna = "10"
+								erantzuna = "10"		# Eskaera handiegia
 							else:
 								irudiak = db.get_irudi_by_data_orduak(data_ordua[0:14], data_ordua[14:28])
-								erantzuna = ""
 								for i in irudiak:
 									if parametroa == 0:
+										erantzuna == ""
 										break
 									else:
 										parametroa -= 1
-										erantzuna += str(len(i)) + "#" + i
+										erantzuna = OK + str(len(i)) + "#"
+										elkarrizketa.sendall(erantzuna.encode())
+										elkarrizketa.sendall(i)
+								erantzuna = None
 						else:
-							erantzuna = "01"
+							erantzuna = "01"		# Espero ez den komandoa
 					else:
-						erantzuna = None
+						erantzuna = None		# Argazki kopurua 0 denez bukatu
 
 			# Espero ez den komandoa jasotzen badu errore kodea bidali
 			elif komandoa == "QTY":
