@@ -135,18 +135,21 @@ while True:
 						if komandoa == "QTY":
 							if parametroa > zenbat:
 								erantzuna = "10"		# Eskaera handiegia
-							else:
+							elif parametroa != 0:
 								irudiak = db.get_irudi_by_data_orduak(data_ordua[0:14], data_ordua[14:28])
+								elkarrizketa.sendall(OK.encode())
 								for i in irudiak:
 									if parametroa == 0:
 										erantzuna == ""
 										break
 									else:
 										parametroa -= 1
-										erantzuna = OK + str(len(i)) + "#"
+										erantzuna = str(len(i)) + "#"
 										elkarrizketa.sendall(erantzuna.encode())
 										elkarrizketa.sendall(i[0])
 								erantzuna = None
+							else:
+								erantzuna = ""
 						else:
 							erantzuna = "01"		# Espero ez den komandoa
 					else:
