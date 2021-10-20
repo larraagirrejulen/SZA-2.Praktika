@@ -145,7 +145,7 @@ while True:
 										parametroa -= 1
 										erantzuna = OK + str(len(i)) + "#"
 										elkarrizketa.sendall(erantzuna.encode())
-										elkarrizketa.sendall(i)
+										elkarrizketa.sendall(i[0])
 								erantzuna = None
 						else:
 							erantzuna = "01"		# Espero ez den komandoa

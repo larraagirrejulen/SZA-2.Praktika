@@ -10,11 +10,6 @@ class DataAccess:
             blob_data = file.read()
         return blob_data
 
-    @staticmethod
-    def write_to_file(data, filename):
-        with open(filename, 'wb') as file:
-            file.write(data)
-
     def __init__(self):
         self.connection = sqlite3.connect('irudiak.db')
         self.c = self.connection.cursor()
