@@ -19,4 +19,5 @@ else:
 db = DataAccess()
 # db.initialize()
 print(db.count_irudi_by_data_orduak(20201212121212, 20101212121212))
+print(db.get_irudi_by_data_ordua(20201212111111))
 db.close()

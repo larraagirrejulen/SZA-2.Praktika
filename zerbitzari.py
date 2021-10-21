@@ -116,7 +116,7 @@ while True:
 						erantzuna = OK + tamaina + "#"
 						elkarrizketa.sendall(erantzuna.encode())
 						elkarrizketa.sendall(irudia)
-						erantzuna = None		# Berriro bidalketarik ez egiteko
+						continue
 					else:
 						erantzuna = "08"		# Data eta ordu horretan argazkirik ez dago
 
@@ -145,13 +145,13 @@ while True:
 									erantzuna = str(len(i[0])) + "#"
 									elkarrizketa.sendall(erantzuna.encode())
 									elkarrizketa.sendall(i[0])
-								erantzuna = None
+								continue
 							else:
 								erantzuna = ""
 						else:
 							erantzuna = "01"		# Espero ez den komandoa
 					else:
-						erantzuna = None		# Argazki kopurua 0 denez bukatu
+						continue		# Argazki kopurua 0 denez bukatu
 
 			# Espero ez den komandoa jasotzen badu errore kodea bidali
 			elif komandoa == "QTY":
