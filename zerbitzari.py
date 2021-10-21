@@ -140,13 +140,11 @@ while True:
 								elkarrizketa.sendall(OK.encode())
 								for i in irudiak:
 									if parametroa == 0:
-										erantzuna == ""
 										break
-									else:
-										parametroa -= 1
-										erantzuna = str(len(i)) + "#"
-										elkarrizketa.sendall(erantzuna.encode())
-										elkarrizketa.sendall(i[0])
+									parametroa -= 1
+									erantzuna = str(len(i[0])) + "#"
+									elkarrizketa.sendall(erantzuna.encode())
+									elkarrizketa.sendall(i[0])
 								erantzuna = None
 							else:
 								erantzuna = ""
