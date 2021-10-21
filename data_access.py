@@ -51,6 +51,7 @@ class DataAccess:
         value = self.c.fetchone()
         if value is None:
             print("Ez dago argazkirik emandako data eta orduan!")
+            return None
         return value[0]
 
     def get_irudi_by_data_ordua(self, data_ordua):
