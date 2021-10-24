@@ -110,15 +110,18 @@ while True:
 
 				# Irudi bakarreko eskaera
 				elif len(data_ordua) == 14:
-					irudia = db.get_irudi_by_data_ordua(data_ordua)
-					if irudia is not None:
-						tamaina = str(len(irudia))
-						erantzuna = OK + tamaina + "#"
-						elkarrizketa.sendall(erantzuna.encode())
-						elkarrizketa.sendall(irudia)
-						continue
-					else:
-						erantzuna = "08"		# Data eta ordu horretan argazkirik ez dago
+					try:
+						irudia = db.get_irudi_by_data_ordua(data_ordua)
+						if irudia is not None:
+							tamaina = str(len(irudia))
+							erantzuna = OK + tamaina + "#"
+							elkarrizketa.sendall(erantzuna.encode())
+							elkarrizketa.sendall(irudia)
+							continue
+						else:
+							erantzuna = "08"		# Data eta ordu horretan argazkirik ez dago
+					except:
+						erantzuna = "09"
 
 				# Irudi anitzeko eskaera
 				else:
@@ -136,16 +139,19 @@ while True:
 							if parametroa > zenbat:
 								erantzuna = "10"		# Eskaera handiegia
 							elif parametroa != 0:
-								irudiak = db.get_irudi_by_data_orduak(data_ordua[0:14], data_ordua[14:28])
-								elkarrizketa.sendall(OK.encode())
-								for i in irudiak:
-									if parametroa == 0:
-										break
-									parametroa -= 1
-									erantzuna = str(len(i[0])) + "#"
-									elkarrizketa.sendall(erantzuna.encode())
-									elkarrizketa.sendall(i[0])
-								continue
+								try:
+									irudiak = db.get_irudi_by_data_orduak(data_ordua[0:14], data_ordua[14:28])
+									elkarrizketa.sendall(OK.encode())
+									for i in irudiak:
+										if parametroa == 0:
+											break
+										parametroa -= 1
+										erantzuna = str(len(i[0])) + "#"
+										elkarrizketa.sendall(erantzuna.encode())
+										elkarrizketa.sendall(i[0])
+									continue
+								except:
+									erantzuna = "11"		# Irudiak ezin izan dira atzitu
 							else:
 								erantzuna = ""		# Eskaera amaitu
 						else:
