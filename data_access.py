@@ -5,16 +5,16 @@ from irudia import Irudia
 class DataAccess:
 
     @staticmethod
-    def convert_to_binary_data(filename):
+    def convert_to_binary_data(filename):       # Argazkia bitarrean bihurtzeko
         with open(filename, 'rb') as file:
             blob_data = file.read()
         return blob_data
 
-    def __init__(self):
+    def __init__(self):     # DBa ireki
         self.connection = sqlite3.connect('irudiak.db')
         self.c = self.connection.cursor()
 
-    def initialize(self):
+    def initialize(self):       # Taulak eta balioak hasieratu
         self.c.execute("""CREATE TABLE irudiak(
                                 data_ordua INTEGER PRIMARY KEY,
                                 norabidea text NOT NULL,
@@ -41,7 +41,7 @@ class DataAccess:
             if do[0] > azkena:
                 azkena = do[0]
         print(azkena)
-        if azkena == 0:
+        if azkena == 0:     # Argazkia dagoen egiaztatu
             print("Ez dago argazkirik emandako norabidean!")
             return None
         return str(azkena)
@@ -49,7 +49,7 @@ class DataAccess:
     def get_norabide_by_data_ordua(self, data_ordua):
         self.c.execute("SELECT norabidea FROM irudiak WHERE data_ordua==:data_ordua", {'data_ordua': data_ordua})
         value = self.c.fetchone()
-        if value is None:
+        if value is None:       # Argazkia dagoen egiaztatu
             print("Ez dago argazkirik emandako data eta orduan!")
             return None
         return value[0]
@@ -57,7 +57,7 @@ class DataAccess:
     def get_irudi_by_data_ordua(self, data_ordua):
         self.c.execute("SELECT argazkia FROM irudiak WHERE data_ordua==:data_ordua", {'data_ordua': data_ordua})
         value = self.c.fetchone()
-        if value is None:
+        if value is None:       # Argazkia dagoen egiaztatu
             return None
         return value[0]
 
@@ -73,5 +73,6 @@ class DataAccess:
                        {'data_ordua1': data_ordua1, 'data_ordua2': data_ordua2})
         return self.c.fetchall()
 
-    def close(self):
+    def close(self):        # DBa itxi
+        self.c.close()
         self.connection.close()

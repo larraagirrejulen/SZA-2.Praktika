@@ -12,7 +12,7 @@ ER = "ER-"
 # Socketak sortu eta konfiguratu
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind(('', PORT))
-s.listen(5)
+s.listen(10)
 signal.signal(signal.SIGCHLD, signal.SIG_IGN)
 
 
@@ -39,14 +39,14 @@ def norabidea_egiaztatu(norab):
 		return False
 
 
-# Erantzun mezua sortzeko funtzioa
+# Erantzun mezua sortzeko funtzioa (Estaltzen ez dituen kasuak, aparte tratatzen dira)
 def erantzun_mezua_sortu(erantzun):
 	regex = re.compile("^(0[0-9])|(1[0-1])$")
-	if regex.match(erantzun):
+	if regex.match(erantzun):		# Errore erantzuna
 		return ER + erantzun + EOM
-	elif erantzun == "":
+	elif erantzun == "":		# IMG eskaera anitzean QTY 0 jasotzean
 		return OK + EOM
-	else:
+	else:		# DIR eta TME kasuetako erantzunak
 		return OK + erantzun + EOM
 
 
@@ -147,7 +147,7 @@ while True:
 									elkarrizketa.sendall(i[0])
 								continue
 							else:
-								erantzuna = ""
+								erantzuna = ""		# Eskaera amaitu
 						else:
 							erantzuna = "01"		# Espero ez den komandoa
 					else:
